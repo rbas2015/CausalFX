@@ -17,3 +17,5 @@ Description: Estimate causal effects of one variable on another, currently for
   the PC algorithm, and an effect bounding method (the Witness Protection Program) 
   based on covariate adjustment with observable independence constraints.
 License: GPL (>= 2)
+URL: http://github.com/rbas2015/CausalFX
+BugReports: http://github.com/rbas2015/CausalFX/issues
