@@ -1,0 +1,14 @@
+## From http://www.talkstats.com/showthread.php/49300-R-can-t-find-inconsolata.sty
+
+
+initexmf --update-fndb
+initexmf --edit-config-file updmap
+
+The latter command should open updmap.cfg in your default editor, commonly Notepad. 
+Add the line 
+
+Map zi4.map 
+
+to updmap.cfg, save and close. Then, in the command window, type
+
+initexmf --mkmaps
