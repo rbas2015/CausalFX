@@ -1,0 +1,19 @@
+Package: CausalFX
+Type: Package
+Title: Methods for estimating causal effects from observational data
+Version: 1.0
+Date: 2015-05-13
+Imports: 
+    igraph, 
+    rcdd,
+    rje
+Authors@R: c(person("Ricardo", "Silva", email = "ricardo@stats.ucl.ac.uk", role = c("cre", "aut")),
+             person("Robin", "Evans", email = "robin.evans@stats.ox.ac.uk", role = "aut"))    
+Author: Ricardo Silva and Robin Evans
+Maintainer: Ricardo Silva <ricardo@stats.ucl.ac.uk>
+Description: Estimate causal effects of one variable on another, currently for
+  binary data only. Methods include instrumental variable bounds, adjustment by a 
+  given covariate set, adjustment by an induced covariate set using a variation of 
+  the PC algorithm, and an effect bounding method (the Witness Protection Program) 
+  based on covariate adjustment with observable independence constraints.
+License: GPL (>= 2)
