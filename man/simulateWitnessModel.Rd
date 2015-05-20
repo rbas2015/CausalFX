@@ -2,7 +2,7 @@
 % Please edit documentation in R/synthetize.R
 \name{simulateWitnessModel}
 \alias{simulateWitnessModel}
-\title{Generates synthetic CausalFX problems}
+\title{Generates Synthetic CausalFX Problems}
 \usage{
 simulateWitnessModel(p, q, par_max, M, no_sol = FALSE)
 }

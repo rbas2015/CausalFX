@@ -12,7 +12,7 @@
 # Current version: 28/04/2015
 # First version: 31/03/2014
 
-#' @title Generates synthetic CausalFX problems
+#' @title Generates Synthetic CausalFX Problems
 #' 
 #' @description
 #' This function generates simple synthetic problems that can be used to test 
@@ -51,7 +51,7 @@
 #' samples from independent Gaussians with zero mean and standard deviation 10 / number of parents. 
 #'
 #' @importFrom igraph graph 
-#' @importFrom igraph graph_empty
+#' @importFrom igraph graph.empty
 #' @importFrom igraph topological.sort
 #' @import rje
 #' @export

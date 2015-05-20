@@ -148,22 +148,22 @@ iv <- function(problem, w, Z, prior_table, M, verbose = FALSE, reject_level = 0.
   
 }
 
-# binAnalyticalIV
-#
-# For a treatment X, outcome Y and instrument W,  This uses the analytical solution for the basic IV model {W -> X, X -> Y, X <- U -> Y}, 
-# U latent, ACE given by P(Y = 1 | do(X = 1)) - P(Y = 1 | do(X = 0)).
-#
-# * Input:
-#
-# - P_ZETA: 8-column matrix of probabilitys, where P_ZETA[,1:4] is P(YX | W = 0), and
-#           entries 1, 2, 3, 4 correspond to YX = {00, 01, 10, 11}. Analogously,
-#           P_ZETA[,1:4] is P(YX | W = 1).
-#
-# * Output:
-#
-# - bottom, upper: the bounds on the ACE
-
 binAnalyticalIV <- function(P_ZETA) {
+  # binAnalyticalIV
+  #
+  # For a treatment X, outcome Y and instrument W,  This uses the analytical solution for the basic IV model {W -> X, X -> Y, X <- U -> Y}, 
+  # U latent, ACE given by P(Y = 1 | do(X = 1)) - P(Y = 1 | do(X = 0)).
+  #
+  # * Input:
+  #
+  # - P_ZETA: 8-column matrix of probabilitys, where P_ZETA[,1:4] is P(YX | W = 0), and
+  #           entries 1, 2, 3, 4 correspond to YX = {00, 01, 10, 11}. Analogously,
+  #           P_ZETA[,1:4] is P(YX | W = 1).
+  #
+  # * Output:
+  #
+  # - bottom, upper: the bounds on the ACE
+  
   w_0_upper <- pmin(1 - P_ZETA[, 1], 
                     1 - P_ZETA[, 5], 
                     P_ZETA[, 2] + P_ZETA[, 3] + P_ZETA[, 7] + P_ZETA[, 8],

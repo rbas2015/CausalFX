@@ -2,7 +2,7 @@
 % Please edit documentation in R/causal_class.R
 \name{cfx}
 \alias{cfx}
-\title{Creates a CausalFX problem instance}
+\title{Creates a CausalFX Problem Instance}
 \usage{
 cfx(x, y, latent_idx = NULL, dat = NULL, g = NULL, model = NULL,
   num_v_max = 20)

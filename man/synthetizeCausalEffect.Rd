@@ -2,7 +2,7 @@
 % Please edit documentation in R/util.R
 \name{synthetizeCausalEffect}
 \alias{synthetizeCausalEffect}
-\title{Computes average causal effects by covariate adjustment in binary models using a given model}
+\title{Computes Average Causal Effects by Covariate Adjustment in Binary Models using a Given Causal Model}
 \usage{
 synthetizeCausalEffect(problem)
 }

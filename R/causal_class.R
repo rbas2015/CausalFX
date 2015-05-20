@@ -11,7 +11,7 @@
 # Current version: 28/04/2015
 # First version: 31/03/2014
 
-#' @title Creates a CausalFX problem instance
+#' @title Creates a CausalFX Problem Instance
 #' 
 #' @description 
 #' Set up an object describing a causal inference problem of finding the
@@ -133,7 +133,7 @@ cfx <- function(x, y, latent_idx = NULL, dat = NULL, g = NULL, model = NULL, num
   return(out)
 }
 
-#' @title Prints a CausalFX problem instance
+#' @title Prints a CausalFX Problem Instance
 #' 
 #' @description 
 #' Prints some of the information regarding a \code{\link{cfx}} object.

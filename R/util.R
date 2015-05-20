@@ -150,7 +150,7 @@ bindagMonteCarloCausalEffect <- function(problem, M) {
   
 }
 
-#' @title Computes average causal effects by covariate adjustment in binary models using a given model
+#' @title Computes Average Causal Effects by Covariate Adjustment in Binary Models using a Given Causal Model
 #' 
 #' @description
 #' 
@@ -240,7 +240,7 @@ synthetizeCausalEffect <- function(problem) {
   
 }
 
-#' @title Estimates average causal effects by covariate adjustment in binary models
+#' @title Estimates Average Causal Effects by Covariate Adjustment in Binary Models
 #' 
 #' @description
 #' 

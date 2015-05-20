@@ -2,7 +2,7 @@
 % Please edit documentation in R/util.R
 \name{bindagCausalEffectBackdoor}
 \alias{bindagCausalEffectBackdoor}
-\title{Estimates average causal effects by covariate adjustment in binary models}
+\title{Estimates Average Causal Effects by Covariate Adjustment in Binary Models}
 \usage{
 bindagCausalEffectBackdoor(problem, prior_table, S)
 }
