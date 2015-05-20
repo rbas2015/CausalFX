@@ -74,7 +74,8 @@ cfx <- function(x, y, latent_idx = NULL, dat = NULL, g = NULL, model = NULL, num
   }
   if (!is.null(g)) {
     graph_edge <- c(rbind(col(g)[g == 1], row(g)[g == 1]))
-    graph_temp <- graph(graph_edge)
+    if (length(graph_edge)) graph_temp <- graph(graph_edge)
+    else graph_temp <- graph.empty()
     v_order <- topological.sort(graph_temp)    
     ancestrals <- list()
     for (v in v_order) {      
