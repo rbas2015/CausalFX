@@ -51,6 +51,7 @@
 #' samples from independent Gaussians with zero mean and standard deviation 10 / number of parents. 
 #'
 #' @importFrom igraph graph 
+#' @importFrom igraph graph_empty
 #' @importFrom igraph topological.sort
 #' @import rje
 #' @export
