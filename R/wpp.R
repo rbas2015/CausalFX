@@ -84,7 +84,7 @@
 #' 
 #' ## Calculate true effect for evaluation purposes
 #' sol_pop <- covsearch(problem, pop_solve = TRUE)
-#' effect_pop <- synthetizeCausalEffect(problem)
+#' effect_pop <- synthesizeCausalEffect(problem)
 #' cat(sprintf("ACE (true) = %1.2f\n", effect_pop$effect_real))
 #'
 #' ## WPP search
