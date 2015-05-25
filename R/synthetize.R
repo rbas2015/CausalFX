@@ -66,7 +66,7 @@ simulateWitnessModel <- function(p, q, par_max, M, no_sol = FALSE) {
     while (TRUE) {
       g_dummy <- matrix(0, nrow = p + 2, ncol = p + 2)
       
-      num_par <- pmin(seq_len(p) - 1, sample.int(par_max, p, replace = TRUE))
+      num_par <- pmin.int(seq_len(p) - 1, sample.int(par_max, p, replace = TRUE))
       for (i in 2:p) {
         num_par_i <- min(i - 1, sample.int(par_max, 1))
         par_i <- sample.int(i - 1, num_par[i])

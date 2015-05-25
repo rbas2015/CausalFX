@@ -164,19 +164,19 @@ iv <- function(problem, w, Z, prior_table, M, verbose = FALSE, reject_level = 0.
 # - bottom, upper: the bounds on the ACE
 
 binAnalyticalIV <- function(P_ZETA) {
-  w_0_upper <- pmin(1 - P_ZETA[, 1], 
+  w_0_upper <- pmin.int(1 - P_ZETA[, 1], 
                     1 - P_ZETA[, 5], 
                     P_ZETA[, 2] + P_ZETA[, 3] + P_ZETA[, 7] + P_ZETA[, 8],
                     P_ZETA[, 3] + P_ZETA[, 4] + P_ZETA[, 6] + P_ZETA[, 7])
-  w_0_bottom <- pmax(P_ZETA[, 7],
+  w_0_bottom <- pmax.int(P_ZETA[, 7],
                     P_ZETA[, 3],
                     P_ZETA[, 3] + P_ZETA[, 4] - P_ZETA[, 5] - P_ZETA[, 8],
                     -P_ZETA[, 1] - P_ZETA[, 4] + P_ZETA[, 7] + P_ZETA[, 8])
-  w_1_upper <- pmin(1 - P_ZETA[, 6],
+  w_1_upper <- pmin.int(1 - P_ZETA[, 6],
                    1 - P_ZETA[, 2],
                    P_ZETA[, 3] + P_ZETA[, 4] + P_ZETA[, 5] + P_ZETA[, 8],
                    P_ZETA[, 1] + P_ZETA[, 4] + P_ZETA[, 7] + P_ZETA[, 8])
-  w_1_bottom <- pmax(P_ZETA[, 8],
+  w_1_bottom <- pmax.int(P_ZETA[, 8],
                     P_ZETA[, 4],
                     -P_ZETA[, 2] - P_ZETA[, 3] + P_ZETA[, 7] + P_ZETA[, 8],
                     P_ZETA[, 3] + P_ZETA[, 4] - P_ZETA[, 6] - P_ZETA[, 7])
