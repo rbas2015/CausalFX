@@ -454,8 +454,7 @@ buildTableParameters <- function(eta_space_0, eta_space_1, delta_space_0, delta_
         t1_row <- t1_row + 1
       }
   if (monotonic) {
-    remove_rows <- which(T1[, 6] < T1[, 5])
-    if (length(remove_rows) > 0) T1 <- T1[-remove_rows, ]
+    T1 <- T1[T1[, 6] >= T1[, 5], ]
   }
   
   # Now, map to T2: the extreme points in zeta^star/eta^star space
@@ -786,8 +785,8 @@ wppIntervalGenerationAnalytical <- function(P_YX.W0, P_YX.W1, P_W, epsilons) {
   intervals[, 2] <- (alpha_upper[, 4] - alpha_lower[, 3]) * P_W + (alpha_upper[, 2] - alpha_lower[, 1]) * (1 - P_W)
   intervals[, 1] <- (alpha_lower[, 4] - alpha_upper[, 3]) * P_W + (alpha_lower[, 2] - alpha_upper[, 1]) * (1 - P_W)
   
-  intervals[which(intervals[, 1] < -1)] <- -1
-  intervals[which(intervals[, 2] >  1)] <-  1
+  intervals[intervals[, 1] < -1] <- -1
+  intervals[intervals[, 2] >  1] <-  1
   
   return(intervals)
   
