@@ -649,6 +649,7 @@ wppIntervalGenerationAnalytical <- function(P_YX.W0, P_YX.W1, P_W, epsilons) {
   # Calculate auxiliary variables
   UK_XY.W <- pmin.int(p_xy.w / beta_lower, 1)
   LK_XY.W <- p_xy.w / beta_upper
+  dim(UK_XY.W) = c(N, 8)
   
   UChi <- beta_upper * p_x.w
   LChi <- beta_lower * p_x.w
@@ -658,6 +659,7 @@ wppIntervalGenerationAnalytical <- function(P_YX.W0, P_YX.W1, P_W, epsilons) {
   
   U_Y <- pmin.int(p_y.xw[, c(3, 4, 7, 8), drop = FALSE] + eps_Y, 1)
   L_Y <- pmax.int(p_y.xw[, c(3, 4, 7, 8), drop = FALSE] - eps_Y, 0)
+  dim(U_Y) = dim(L_Y) = dim(U_X) = dim(L_X) = c(N,4)
   
   U_bar <- rowMaxs(U_Y)
   L_bar <- rowMins(L_Y)
@@ -694,6 +696,7 @@ wppIntervalGenerationAnalytical <- function(P_YX.W0, P_YX.W1, P_W, epsilons) {
   upper <- pmin.int(upper, 1)
   lower[is.nan(lower)] <- 0
   lower <- pmax.int(lower, 0)
+  dim(upper) = dim(lower) = c(N, 4)
   
   ## bounds for omega_xw
   omega_upper <- upper
@@ -728,6 +731,7 @@ wppIntervalGenerationAnalytical <- function(P_YX.W0, P_YX.W1, P_W, epsilons) {
                    1 - UK_XY.W[,c(1,2,5,6), drop = FALSE] - eps_w * UChi[,i_xp.w, drop = FALSE],
                  omega_lower[,i_x.wp, drop = FALSE] - eps_w)
     
+    dim(upper) = dim(lower) = c(N, 4)
     omega_upper <- upper
     omega_lower <- lower
     
@@ -748,6 +752,7 @@ wppIntervalGenerationAnalytical <- function(P_YX.W0, P_YX.W1, P_W, epsilons) {
                    - UK_XY.W[,c(1,2,5,6), drop = FALSE] - eps_w * UChi[,i_xp.w, drop = FALSE])
     lower <- pmax.int(lower, omega_lower - omega_upper[,i_x.wp, drop = FALSE])
     
+    dim(upper) = dim(lower) = c(N, 4)
     diff_upper <- upper
     diff_lower <- lower
     
@@ -769,6 +774,7 @@ wppIntervalGenerationAnalytical <- function(P_YX.W0, P_YX.W1, P_W, epsilons) {
                    + LK_XY.W[,c(8,7,4,3), drop = FALSE] + LK_XY.W[,c(3,4,7,8), drop = FALSE] +
                    - 2*eps_w*UChi[,i_x.wp, drop = FALSE] - UChi[,i_x.w, drop = FALSE]*(U_bar + L_bar) + L_bar)
     
+    dim(upper) = dim(lower) = c(N, 4)
     omega_upper <- upper
     omega_lower <- lower
     
@@ -781,7 +787,8 @@ wppIntervalGenerationAnalytical <- function(P_YX.W0, P_YX.W1, P_W, epsilons) {
     
   alpha_upper <- beta_upper * pmin.int(omega_upper, 1)
   alpha_lower <- beta_lower * omega_lower
-    
+  dim(alpha_upper) = c(N, 4)
+
   intervals[, 2] <- (alpha_upper[, 4] - alpha_lower[, 3]) * P_W + (alpha_upper[, 2] - alpha_lower[, 1]) * (1 - P_W)
   intervals[, 1] <- (alpha_lower[, 4] - alpha_upper[, 3]) * P_W + (alpha_lower[, 2] - alpha_upper[, 1]) * (1 - P_W)
   

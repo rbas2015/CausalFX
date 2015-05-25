@@ -157,7 +157,7 @@ iv <- function(problem, w, Z, prior_table, M, verbose = FALSE, reject_level = 0.
 #
 # - P_ZETA: 8-column matrix of probabilitys, where P_ZETA[,1:4] is P(YX | W = 0), and
 #           entries 1, 2, 3, 4 correspond to YX = {00, 01, 10, 11}. Analogously,
-#           P_ZETA[,1:4] is P(YX | W = 1).
+#           P_ZETA[,5:8] is P(YX | W = 1).
 #
 # * Output:
 #
