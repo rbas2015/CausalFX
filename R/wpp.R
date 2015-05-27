@@ -767,24 +767,24 @@ wppIntervalGenerationAnalytical <- function(P_YX.W0, P_YX.W1, P_W, epsilons) {
                    + 2*eps_w*UChi[,i_x.wp, drop = FALSE] - LChi[,i_x.wp, drop = FALSE]*(U_bar + L_bar) + U_bar)
     
     lower <- pmax.int(omega_lower,
-                 - diff_lower[,i_xp.wp, drop = FALSE] - UK_XY.W[,c(8,7,4,3), drop = FALSE] + LK_XY.W[,c(3,4,7,8), drop = FALSE] +
-                   + LK_XY.W[,c(4,3,8,7), drop = FALSE] + LK_XY.W[,c(7,8,3,4), drop = FALSE] +
-                   - UChi[,i_x.wp, drop = FALSE] * (U_bar + L_bar + 2*eps_w) + L_bar
-                 - diff_lower[,i_xp.w, drop = FALSE] - UK_XY.W[,c(4,3,8,7), drop = FALSE] + LK_XY.W[,c(7,8,3,4), drop = FALSE] +
-                   + LK_XY.W[,c(8,7,4,3), drop = FALSE] + LK_XY.W[,c(3,4,7,8), drop = FALSE] +
-                   - 2*eps_w*UChi[,i_x.wp, drop = FALSE] - UChi[,i_x.w, drop = FALSE]*(U_bar + L_bar) + L_bar)
-    
+              - diff_lower[,i_xp.wp, drop = FALSE] - UK_XY.W[,c(8,7,4,3), drop = FALSE] + LK_XY.W[,c(3,4,7,8), drop = FALSE] +
+                + LK_XY.W[,c(4,3,8,7), drop = FALSE] + LK_XY.W[,c(7,8,3,4), drop = FALSE] +
+                - UChi[,i_x.wp, drop = FALSE] * (U_bar + L_bar + 2*eps_w) + L_bar,
+              - diff_lower[,i_xp.w, drop = FALSE] - UK_XY.W[,c(4,3,8,7), drop = FALSE] + LK_XY.W[,c(7,8,3,4), drop = FALSE] +
+                + LK_XY.W[,c(8,7,4,3), drop = FALSE] + LK_XY.W[,c(3,4,7,8), drop = FALSE] +
+                - 2*eps_w*UChi[,i_x.wp, drop = FALSE] - UChi[,i_x.w, drop = FALSE]*(U_bar + L_bar) + L_bar)
+
     dim(upper) = dim(lower) = c(N, 4)
+
     omega_upper <- upper
     omega_lower <- lower
-    
+
     ## if no non-trivial move has been made then break
-    if (all(omega_upper - after0$upper > -1e-12)) break
-    if (all(omega_lower - after0$lower < 1e-12)) break
+    if (all(omega_upper - after0$upper > -1e-12) && all(omega_lower - after0$lower < 1e-12)) break
   }
   
   intervals <- matrix(0, nrow = N, ncol = 2)
-    
+
   alpha_upper <- beta_upper * pmin.int(omega_upper, 1)
   alpha_lower <- beta_lower * omega_lower
   dim(alpha_upper) = c(N, 4)
