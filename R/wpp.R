@@ -84,7 +84,7 @@
 #' 
 #' ## Calculate true effect for evaluation purposes
 #' sol_pop <- covsearch(problem, pop_solve = TRUE)
-#' effect_pop <- synthetizeCausalEffect(problem)
+#' effect_pop <- synthesizeCausalEffect(problem)
 #' cat(sprintf("ACE (true) = %1.2f\n", effect_pop$effect_real))
 #'
 #' ## WPP search (with a small number of Monte Carlo samples)
@@ -454,8 +454,7 @@ buildTableParameters <- function(eta_space_0, eta_space_1, delta_space_0, delta_
         t1_row <- t1_row + 1
       }
   if (monotonic) {
-    remove_rows <- which(T1[, 6] < T1[, 5])
-    if (length(remove_rows) > 0) T1 <- T1[-remove_rows, ]
+    T1 <- T1[T1[, 6] >= T1[, 5], ]
   }
   
   # Now, map to T2: the extreme points in zeta^star/eta^star space
@@ -627,8 +626,8 @@ wppIntervalGenerationAnalytical <- function(P_YX.W0, P_YX.W1, P_W, epsilons) {
   #              are lower bounds, and second column are upper bounds
   
   N <- length(P_W)
-  P_YX.W0[which(P_YX.W0 == 0)] <- 1.e-15
-  P_YX.W1[which(P_YX.W1 == 0)] <- 1.e-15
+  P_YX.W0[P_YX.W0 == 0] <- 1.e-15
+  P_YX.W1[P_YX.W1 == 0] <- 1.e-15
   
   ## indices
   
@@ -648,55 +647,56 @@ wppIntervalGenerationAnalytical <- function(P_YX.W0, P_YX.W1, P_W, epsilons) {
   beta_upper <- epsilons[6]
   
   # Calculate auxiliary variables
-  UK_XY.W <- pmin(p_xy.w / beta_lower, 1)
+  UK_XY.W <- pmin.int(p_xy.w / beta_lower, 1)
   LK_XY.W <- p_xy.w / beta_upper
+  dim(UK_XY.W) = c(N, 8)
   
   UChi <- beta_upper * p_x.w
   LChi <- beta_lower * p_x.w
   
-  L_X <- pmax(p_x.w - eps_X, 0)
-  U_X <- pmin(p_x.w + eps_X, 1)
+  L_X <- pmax.int(p_x.w - eps_X, 0)
+  U_X <- pmin.int(p_x.w + eps_X, 1)
   
-  U_Y <- pmin(p_y.xw[, c(3, 4, 7, 8), drop = FALSE] + eps_Y, 1)
-  L_Y <- pmax(p_y.xw[, c(3, 4, 7, 8), drop = FALSE] - eps_Y, 0)
+  U_Y <- pmin.int(p_y.xw[, c(3, 4, 7, 8), drop = FALSE] + eps_Y, 1)
+  L_Y <- pmax.int(p_y.xw[, c(3, 4, 7, 8), drop = FALSE] - eps_Y, 0)
+  dim(U_Y) = dim(L_Y) = dim(U_X) = dim(L_X) = c(N,4)
   
   U_bar <- rowMaxs(U_Y)
   L_bar <- rowMins(L_Y)
   
   ## Derive the box constraints for omega_xw first
   ## Theorem 1 bounds
-  upper <-                 UK_XY.W[,c(3,4,7,8), drop = FALSE] + U_Y * UChi[,i_xp.w, drop = FALSE]
-  upper <- pmin(upper,     UK_XY.W[,c(3,4,7,8), drop = FALSE] / L_X)
-  upper <- pmin(upper, 1 - LK_XY.W[,c(1,2,5,6), drop = FALSE] / U_X)
+  upper <- pmin.int(UK_XY.W[,c(3,4,7,8), drop = FALSE] + U_Y * UChi[,i_xp.w, drop = FALSE],
+                    UK_XY.W[,c(3,4,7,8), drop = FALSE] / L_X,
+                1 - LK_XY.W[,c(1,2,5,6), drop = FALSE] / U_X)
   
-  lower <-                 LK_XY.W[,c(3,4,7,8), drop = FALSE] + L_Y * LChi[,i_xp.w, drop = FALSE]
-  lower <- pmax(lower,     LK_XY.W[,c(3,4,7,8), drop = FALSE] / U_X)
-  lower <- pmax(lower, 1 - UK_XY.W[,c(1,2,5,6), drop = FALSE] / L_X)
+  lower <- pmax.int(LK_XY.W[,c(3,4,7,8), drop = FALSE] + L_Y * LChi[,i_xp.w, drop = FALSE],
+                    LK_XY.W[,c(3,4,7,8), drop = FALSE] / U_X,
+                    1 - UK_XY.W[,c(1,2,5,6), drop = FALSE] / L_X)
   
   ## Theorem 2 bounds
-  upper <- pmin(upper,     (UK_XY.W[,c(7,8,3,4), drop = FALSE] + eps_w * UChi[, i_x.wp, drop = FALSE]) / L_X[, i_x.wp, drop = FALSE])
-  upper <- pmin(upper, 1 - (LK_XY.W[,c(5,6,1,2), drop = FALSE] - eps_w * UChi[, i_x.wp, drop = FALSE]) / U_X[, i_x.wp, drop = FALSE])
-  lower <- pmax(lower,     (LK_XY.W[,c(7,8,3,4), drop = FALSE] - eps_w * UChi[, i_x.wp, drop = FALSE]) / U_X[, i_x.wp, drop = FALSE])
-  lower <- pmax(lower, 1 - (UK_XY.W[,c(5,6,1,2), drop = FALSE] + eps_w * UChi[, i_x.wp, drop = FALSE]) / L_X[, i_x.wp, drop = FALSE])
+  upper <- pmin.int(upper,     (UK_XY.W[,c(7,8,3,4), drop = FALSE] + eps_w * UChi[, i_x.wp, drop = FALSE]) / L_X[, i_x.wp, drop = FALSE], 
+                           1 - (LK_XY.W[,c(5,6,1,2), drop = FALSE] - eps_w * UChi[, i_x.wp, drop = FALSE]) / U_X[, i_x.wp, drop = FALSE])
+  lower <- pmax.int(lower,     (LK_XY.W[,c(7,8,3,4), drop = FALSE] - eps_w * UChi[, i_x.wp, drop = FALSE]) / U_X[, i_x.wp, drop = FALSE],
+                           1 - (UK_XY.W[,c(5,6,1,2), drop = FALSE] + eps_w * UChi[, i_x.wp, drop = FALSE]) / L_X[, i_x.wp, drop = FALSE])
   
   ## Bounds from Theorem 3
-  upper <- pmin(upper,
+  upper <- pmin.int(upper,
                 (UK_XY.W[,c(8,7,4,3), drop = FALSE] + UK_XY.W[,c(7,8,3,4), drop = FALSE] + UK_XY.W[,c(3,4,7,8), drop = FALSE] +
-                   - LK_XY.W[,c(4,3,8,7), drop = FALSE] + UChi[,i_xp.w, drop = FALSE]*(U_bar + L_bar + 2 * eps_w) - L_bar))
-  upper <- pmin(upper,
+               - LK_XY.W[,c(4,3,8,7), drop = FALSE] + UChi[,i_xp.w, drop = FALSE]*(U_bar + L_bar + 2 * eps_w) - L_bar),
                 (UK_XY.W[,c(4,3,8,7), drop = FALSE] + UK_XY.W[, c(7,8,3,4), drop = FALSE] + UK_XY.W[, c(3,4,7,8), drop = FALSE] - LK_XY.W[, c(8,7,4,3), drop = FALSE] +
-                   + 2 * UChi[,i_xp.w, drop = FALSE] * eps_w + UChi[,c(4,3,2,1), drop = FALSE] * (U_bar + L_bar) - L_bar))
-  lower <- pmax(lower,
+                + 2 * UChi[,i_xp.w, drop = FALSE] * eps_w + UChi[,c(4,3,2,1), drop = FALSE] * (U_bar + L_bar) - L_bar))
+  lower <- pmax.int(lower,
                 (- UK_XY.W[,c(8,7,4,3), drop = FALSE] + LK_XY.W[,c(7,8,3,4), drop = FALSE] + LK_XY.W[,c(3,4,7,8), drop = FALSE] +
-                   LK_XY.W[,c(4,3,8,7), drop = FALSE] + - 2 * UChi[,i_xp.w, drop = FALSE] * eps_w + LChi[,c(4,3,2,1), drop = FALSE] * (U_bar + L_bar) - U_bar))
-  lower <-  pmax(lower,
+                   LK_XY.W[,c(4,3,8,7), drop = FALSE] + - 2 * UChi[,i_xp.w, drop = FALSE] * eps_w + LChi[,c(4,3,2,1), drop = FALSE] * (U_bar + L_bar) - U_bar),
                  (-UK_XY.W[,c(4,3,8,7), drop = FALSE] + LK_XY.W[,c(7,8,3,4), drop = FALSE] + LK_XY.W[,c(3,4,7,8), drop = FALSE] +
                     + LK_XY.W[,c(8,7,4,3), drop = FALSE] - UChi[,i_xp.w, drop = FALSE] * 2 * eps_w + LChi[,i_xp.w, drop = FALSE]*(U_bar + L_bar) - U_bar))
   
   upper[is.nan(upper)] <- 1
-  upper <- pmin(upper, 1)
+  upper <- pmin.int(upper, 1)
   lower[is.nan(lower)] <- 0
-  lower <- pmax(lower, 0)
+  lower <- pmax.int(lower, 0)
+  dim(upper) = dim(lower) = c(N, 4)
   
   ## bounds for omega_xw
   omega_upper <- upper
@@ -707,89 +707,93 @@ wppIntervalGenerationAnalytical <- function(P_YX.W0, P_YX.W1, P_W, epsilons) {
   diff_lower <- matrix(-eps_w, nrow = N, ncol = 4)
   
   ## Now, iterate over linear constraints
-  for (iter in 1:4) {
+  for (iter in 1:2) {
+    
+    ## record so as to break if no change observed
+    after0 <- list(upper=omega_upper, lower=omega_lower)
     
     upper <- omega_upper
     lower <- omega_lower
     
     ## #############################################
     ## Iteration over the linear constraints of Theorem 2
-    upper <- pmin(upper,
+    upper <- pmin.int(upper,
                  omega_upper[,i_x.wp, drop = FALSE]*U_X[,i_xp.w, drop = FALSE] +
-                   UK_XY.W[,c(3,4,7,8), drop = FALSE] + eps_w*UChi[,i_xp.w, drop = FALSE])
-    upper <- pmin(upper,
+                   UK_XY.W[,c(3,4,7,8), drop = FALSE] + eps_w*UChi[,i_xp.w, drop = FALSE],
                  (omega_upper[,i_x.wp, drop = FALSE] - 1)*L_X[,i_xp.w, drop = FALSE] +
-                   1 - LK_XY.W[,c(1,2,5,6), drop = FALSE]  + eps_w * UChi[,i_xp.w, drop = FALSE])
-    upper <- pmin(upper, omega_upper[,i_x.wp, drop = FALSE] + eps_w)
+                   1 - LK_XY.W[,c(1,2,5,6), drop = FALSE]  + eps_w * UChi[,i_xp.w, drop = FALSE],
+                  omega_upper[,i_x.wp, drop = FALSE] + eps_w)
     
-    lower <- pmax(lower,
+    lower <- pmax.int(lower,
                  omega_lower[,i_x.wp, drop = FALSE]*L_X[,i_xp.w, drop = FALSE] +
-                   LK_XY.W[,c(3,4,7,8), drop = FALSE] - eps_w * UChi[,i_xp.w, drop = FALSE])
-    lower <- pmax(lower,
+                   LK_XY.W[,c(3,4,7,8), drop = FALSE] - eps_w * UChi[,i_xp.w, drop = FALSE],
                  (omega_lower[,i_x.wp, drop = FALSE] - 1)*U_X[,i_xp.w, drop = FALSE] +
-                   1 - UK_XY.W[,c(1,2,5,6), drop = FALSE] - eps_w * UChi[,i_xp.w, drop = FALSE])
-    lower <- pmax(lower, omega_lower[,i_x.wp, drop = FALSE] - eps_w)
+                   1 - UK_XY.W[,c(1,2,5,6), drop = FALSE] - eps_w * UChi[,i_xp.w, drop = FALSE],
+                 omega_lower[,i_x.wp, drop = FALSE] - eps_w)
     
+    dim(upper) = dim(lower) = c(N, 4)
     omega_upper <- upper
     omega_lower <- lower
     
     ## #############################################
     ## Iteration over the linear constraints of Theorem 2 to bound omega_xw - omega_xw'
     ## equation (9)
-    upper <- pmin(diff_upper,
+    upper <- pmin.int(diff_upper,
                  omega_upper[,i_x.wp, drop = FALSE]*(U_X[,i_xp.w, drop = FALSE] - 1) +
-                   UK_XY.W[,c(3,4,7,8), drop = FALSE] + eps_w * UChi[,i_xp.w, drop = FALSE])
-    upper <- pmin(upper,
+                   UK_XY.W[,c(3,4,7,8), drop = FALSE] + eps_w * UChi[,i_xp.w, drop = FALSE],
                  (omega_upper[,i_x.wp, drop = FALSE] - 1)*(L_X[,i_xp.w, drop = FALSE] - 1)  +
                    - LK_XY.W[,c(1,2,5,6), drop = FALSE]  + eps_w * UChi[,i_xp.w, drop = FALSE])
-    upper <- pmin(upper, omega_upper - omega_lower[,i_x.wp, drop = FALSE])
+    upper <- pmin.int(upper, omega_upper - omega_lower[,i_x.wp, drop = FALSE])
     
-    lower <- pmax(diff_lower,
+    lower <- pmax.int(diff_lower,
                  omega_lower[,i_x.wp, drop = FALSE]*(L_X[,i_xp.w, drop = FALSE]-1) +
-                   LK_XY.W[,c(3,4,7,8), drop = FALSE] - eps_w * UChi[,i_xp.w, drop = FALSE])
-    lower <- pmax(lower,
+                   LK_XY.W[,c(3,4,7,8), drop = FALSE] - eps_w * UChi[,i_xp.w, drop = FALSE],
                  (omega_lower[,i_x.wp, drop = FALSE] - 1)*(U_X[,i_xp.w, drop = FALSE]-1) +
                    - UK_XY.W[,c(1,2,5,6), drop = FALSE] - eps_w * UChi[,i_xp.w, drop = FALSE])
-    lower <- pmax(lower, omega_lower - omega_upper[,i_x.wp, drop = FALSE])
+    lower <- pmax.int(lower, omega_lower - omega_upper[,i_x.wp, drop = FALSE])
     
+    dim(upper) = dim(lower) = c(N, 4)
     diff_upper <- upper
     diff_lower <- lower
     
     ## #############################################
     ## Iteration over the linear constraints of Theorem 3 to bound omega_xw
-    upper <- pmin(omega_upper,
+    upper <- pmin.int(omega_upper,
                  diff_upper[,i_xp.w, drop = FALSE] - LK_XY.W[,c(4,3,8,7), drop = FALSE] + UK_XY.W[,c(3,4,7,8), drop = FALSE] +
                    + UK_XY.W[,c(8,7,4,3), drop = FALSE] + UK_XY.W[,c(7,8,3,4), drop = FALSE] +
-                   - LChi[,i_x.w, drop = FALSE]*(U_bar + L_bar) + 2*eps_w + UChi[,i_x.wp, drop = FALSE] + U_bar)
-    upper <- pmin(upper,
+                   - LChi[,i_x.w, drop = FALSE]*(U_bar + L_bar) + 2*eps_w + UChi[,i_x.wp, drop = FALSE] + U_bar,
                  diff_upper[,i_xp.wp, drop = FALSE] - LK_XY.W[,c(8,7,4,3), drop = FALSE] + UK_XY.W[,c(7,8,3,4), drop = FALSE] +
                    + UK_XY.W[,c(4,3,8,7), drop = FALSE] + UK_XY.W[,c(3,4,7,8), drop = FALSE] +
                    + 2*eps_w*UChi[,i_x.wp, drop = FALSE] - LChi[,i_x.wp, drop = FALSE]*(U_bar + L_bar) + U_bar)
     
-    lower <- pmax(omega_lower,
-                 - diff_lower[,i_xp.wp, drop = FALSE] - UK_XY.W[,c(8,7,4,3), drop = FALSE] + LK_XY.W[,c(3,4,7,8), drop = FALSE] +
-                   + LK_XY.W[,c(4,3,8,7), drop = FALSE] + LK_XY.W[,c(7,8,3,4), drop = FALSE] +
-                   - UChi[,i_x.wp, drop = FALSE] * (U_bar + L_bar + 2*eps_w) + L_bar)
-    lower <- pmax(lower,
-                 - diff_lower[,i_xp.w, drop = FALSE] - UK_XY.W[,c(4,3,8,7), drop = FALSE] + LK_XY.W[,c(7,8,3,4), drop = FALSE] +
-                   + LK_XY.W[,c(8,7,4,3), drop = FALSE] + LK_XY.W[,c(3,4,7,8), drop = FALSE] +
-                   - 2*eps_w*UChi[,i_x.wp, drop = FALSE] - UChi[,i_x.w, drop = FALSE]*(U_bar + L_bar) + L_bar)
-    
+    lower <- pmax.int(omega_lower,
+              - diff_lower[,i_xp.wp, drop = FALSE] - UK_XY.W[,c(8,7,4,3), drop = FALSE] + LK_XY.W[,c(3,4,7,8), drop = FALSE] +
+                + LK_XY.W[,c(4,3,8,7), drop = FALSE] + LK_XY.W[,c(7,8,3,4), drop = FALSE] +
+                - UChi[,i_x.wp, drop = FALSE] * (U_bar + L_bar + 2*eps_w) + L_bar,
+              - diff_lower[,i_xp.w, drop = FALSE] - UK_XY.W[,c(4,3,8,7), drop = FALSE] + LK_XY.W[,c(7,8,3,4), drop = FALSE] +
+                + LK_XY.W[,c(8,7,4,3), drop = FALSE] + LK_XY.W[,c(3,4,7,8), drop = FALSE] +
+                - 2*eps_w*UChi[,i_x.wp, drop = FALSE] - UChi[,i_x.w, drop = FALSE]*(U_bar + L_bar) + L_bar)
+
+    dim(upper) = dim(lower) = c(N, 4)
+
     omega_upper <- upper
     omega_lower <- lower
-    
+
+    ## if no non-trivial move has been made then break
+    if (all(omega_upper - after0$upper > -1e-12) && all(omega_lower - after0$lower < 1e-12)) break
   }
   
   intervals <- matrix(0, nrow = N, ncol = 2)
-    
-  alpha_upper <- beta_upper * pmin(omega_upper, 1)
+
+  alpha_upper <- beta_upper * pmin.int(omega_upper, 1)
   alpha_lower <- beta_lower * omega_lower
-    
+  dim(alpha_upper) = c(N, 4)
+
   intervals[, 2] <- (alpha_upper[, 4] - alpha_lower[, 3]) * P_W + (alpha_upper[, 2] - alpha_lower[, 1]) * (1 - P_W)
   intervals[, 1] <- (alpha_lower[, 4] - alpha_upper[, 3]) * P_W + (alpha_lower[, 2] - alpha_upper[, 1]) * (1 - P_W)
   
-  intervals[which(intervals[, 1] < -1)] <- -1
-  intervals[which(intervals[, 2] >  1)] <-  1
+  intervals[intervals[, 1] < -1] <- -1
+  intervals[intervals[, 2] >  1] <-  1
   
   return(intervals)
   

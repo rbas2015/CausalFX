@@ -85,7 +85,7 @@ problem <- simulateWitnessModel(p = 4, q = 4, par_max = 3, M = 200)
 
 ## Calculate true effect for evaluation purposes
 sol_pop <- covsearch(problem, pop_solve = TRUE)
-effect_pop <- synthetizeCausalEffect(problem)
+effect_pop <- synthesizeCausalEffect(problem)
 cat(sprintf("ACE (true) = \%1.2f\\n", effect_pop$effect_real))
 
 ## WPP search (with a small number of Monte Carlo samples)

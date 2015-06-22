@@ -181,14 +181,13 @@ bindagMonteCarloCausalEffect <- function(problem, M) {
 #' ## Idealized case: suppose we know the true distribution, 
 #' ## get "exact" ACE estimands for different adjustment sets
 #' sol_pop <- covsearch(problem, pop_solve = TRUE)
-#' effect_pop <- synthetizeCausalEffect(problem)
+#' effect_pop <- synthesizeCausalEffect(problem)
 #' cat(sprintf(
 #'   "ACE (true) = %1.2f\nACE (adjusting for all) = %1.2f\nACE (adjusting for nothing) = %1.2f\n", 
 #'    effect_pop$effect_real, effect_pop$effect_naive, effect_pop$effect_naive2))
 #'
 #' @export
-
-synthetizeCausalEffect <- function(problem) {
+synthesizeCausalEffect <- function(problem) {
   
   if (class(problem) != "cfx") {
     stop("a CausalFX object is necessary")
@@ -240,6 +239,12 @@ synthetizeCausalEffect <- function(problem) {
   
 }
 
+##' @describeIn synthesizeCausalEffect
+synthetizeCausalEffect <- function(problem) {
+  .Deprecated("synthesizeCausalEffect")
+  synthesizeCausalEffect(problem) 
+}
+
 #' @title Estimates Average Causal Effects by Covariate Adjustment in Binary Models
 #' 
 #' @description
@@ -272,7 +277,7 @@ synthetizeCausalEffect <- function(problem) {
 #' ## Idealized case: suppose we know the true distribution, 
 #' ## get "exact" ACE estimands for different adjustment sets
 #' sol_pop <- covsearch(problem, pop_solve = TRUE)
-#' effect_pop <- synthetizeCausalEffect(problem)
+#' effect_pop <- synthesizeCausalEffect(problem)
 #' cat(sprintf(
 #'   "ACE (true) = %1.2f\nACE (adjusting for all) = %1.2f\nACE (adjusting for nothing) = %1.2f\n", 
 #'    effect_pop$effect_real, effect_pop$effect_naive, effect_pop$effect_naive2))
