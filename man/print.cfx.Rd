@@ -2,7 +2,7 @@
 % Please edit documentation in R/causal_class.R
 \name{print.cfx}
 \alias{print.cfx}
-\title{Prints a CausalFX problem instance}
+\title{Prints a CausalFX Problem Instance}
 \usage{
 \method{print}{cfx}(x, ...)
 }
