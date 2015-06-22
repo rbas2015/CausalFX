@@ -1,14 +1,15 @@
 Package: CausalFX
 Type: Package
-Title: Methods for Estimating Causal Effects from Observational Data
-Version: 1.0.2
-Date: 2015-05-25
+Title: Methods for estimating causal effects from observational data
+Version: 1.0
+Date: 2015-05-13
 Imports: 
     igraph, 
     rcdd,
     rje
 Authors@R: c(person("Ricardo", "Silva", email = "ricardo@stats.ucl.ac.uk", role = c("cre", "aut")),
              person("Robin", "Evans", email = "robin.evans@stats.ox.ac.uk", role = "aut"))    
+Author: Ricardo Silva and Robin Evans
 Maintainer: Ricardo Silva <ricardo@stats.ucl.ac.uk>
 Description: Estimate causal effects of one variable on another, currently for
   binary data only. Methods include instrumental variable bounds, adjustment by a 
@@ -18,5 +19,3 @@ Description: Estimate causal effects of one variable on another, currently for
 License: GPL (>= 2)
 URL: http://github.com/rbas2015/CausalFX
 BugReports: http://github.com/rbas2015/CausalFX/issues
-Suggests: testthat
-

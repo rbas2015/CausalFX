@@ -172,17 +172,66 @@ binAnalyticalIV <- function(P_ZETA) {
                     P_ZETA[, 3],
                     P_ZETA[, 3] + P_ZETA[, 4] - P_ZETA[, 5] - P_ZETA[, 8],
                     -P_ZETA[, 1] - P_ZETA[, 4] + P_ZETA[, 7] + P_ZETA[, 8])
+#                    P_ZETA[, 3] + P_ZETA[, 2] - P_ZETA[, 5] - P_ZETA[, 6])
   w_1_upper <- pmin.int(1 - P_ZETA[, 6],
                    1 - P_ZETA[, 2],
                    P_ZETA[, 3] + P_ZETA[, 4] + P_ZETA[, 5] + P_ZETA[, 8],
                    P_ZETA[, 1] + P_ZETA[, 4] + P_ZETA[, 7] + P_ZETA[, 8])
+#            P_ZETA[, 1] + P_ZETA[, 4] + P_ZETA[, 6] + P_ZETA[, 8])
   w_1_bottom <- pmax.int(P_ZETA[, 8],
                     P_ZETA[, 4],
-                    -P_ZETA[, 2] - P_ZETA[, 3] + P_ZETA[, 7] + P_ZETA[, 8],
-                    P_ZETA[, 3] + P_ZETA[, 4] - P_ZETA[, 6] - P_ZETA[, 7])
-  return(list(bounds = cbind(w_1_bottom - w_0_upper, w_1_upper - w_0_bottom),
+                     -P_ZETA[, 2] - P_ZETA[, 3] + P_ZETA[, 7] + P_ZETA[, 8],
+                     P_ZETA[, 3] + P_ZETA[, 4] - P_ZETA[, 6] - P_ZETA[, 7])
+#                    -P_ZETA[, 1] - P_ZETA[, 2] + P_ZETA[, 5] + P_ZETA[, 8],
+#                    -P_ZETA[, 2] - P_ZETA[, 3] + P_ZETA[, 7] + P_ZETA[, 8])
+return(list(bounds = cbind(w_1_bottom - w_0_upper, w_1_upper - w_0_bottom),
               valid = (w_0_upper > w_0_bottom) * (w_1_upper > w_1_bottom)))
 }
+
+##' @title Instrumental Variables causal effects bounds
+##' 
+##' Get generalization of Balke and Pearl's IV bounds for model with \eqn{W -> X -> Y}.
+##' 
+##' @param p an array or vector of probabilities \eqn{P(X=x, Y=x, W=w)} or \eqn{P(X=x, Y=x | W=w)}, with \eqn{X} changing fastest, \eqn{W} slowest
+##' @param epsilons vector of relaxation parameters (see details); defaults to Balke-Pearl bounds
+##' 
+##' @details
+##' Joint probabilities should be specified, but conditional probabilities are 
+##' sufficient (and permitted) if \code{epsilon[5] = epsilon[6] = 1}.  If either 
+##' doesn't hold and conditional probabilities are
+##' supplied, then an error is returned.
+##' 
+##' 
+##' \code{epsilons} is a vector of six positions corresponding to the relaxation parameters. In order: 
+#'        \enumerate{
+#'        \item the maximum difference in the conditional probability of the outcome given everything else, as the instrument changes levels;
+#'        \item the maximum difference in the conditional probability of the outcome given everything else, and the conditional distribution
+#'            excluding latent variables for the instrument set at 0;
+#'        \item the maximum difference in the conditional probability of the outcome given everything else, and the conditional distribution
+#'            excluding latent variables for the instrument set at 1;
+#'        \item the maximum difference in the conditional probability of the treatment given its causes, and the conditional distribution
+#'            excluding latent variables
+#'        \item the maximum ratio between the conditional distribution of the latent variable given the instrument and the 
+#'            marginal distribution of the latent variable. This has to be greater than or equal to 1;
+#'        \item the minimum ratio between the conditional distribution of the latent variable given the instrument and the 
+#'            marginal distribution of the latent variable. This has to be in the interval (0, 1].
+#'            }
+#'            Setting this to \code{c(0,1,1,1,1,1)} corresponds to the ordinary IV model.  
+ivBounds <- function(p, epsilons=c(0,1,1,1,1,1)) {
+  P_W = marginTable(p, 3)
+  if (abs(sum(P_W) - 1) < 1e-8) {
+    p = conditionTable(p, 1:2, 3)
+  }
+  else if (abs(sum(P_W) - 2) < 1e-8) {
+    if(max(abs(epsilons[5:6] - 1)) > 1e-8) stop("Must give full joint distribution to relax randomization constraint.")
+     P_W = .5
+  }
+  
+  tmp = c(wppIntervalGenerationAnalytical(matrix(p[1:4],1,4), matrix(p[5:8],1,4), P_W[1], epsilons=epsilons))
+  #if (tmp[1] > tmp[2]) return(c(NA,NA))
+  tmp
+}
+
 
 #' @title Summarize Binary Instrumental Variable Analyses
 #' 
